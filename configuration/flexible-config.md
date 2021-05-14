@@ -113,6 +113,30 @@ The template `template_name.tmpl` is executed and processed. The value of `conte
 
 Go templates allow you to introduce handy stuff like conditionals or loops and allow you to create powerful configurations.
 
+#### Include default values if key is not available in the **endpoints.json**
+If we have several endpoints which consists of the same set of key value pairs, then we can have default values for them and add them to the **endpoint.json** file, if the value of the key changes from the default value.
+In this case we can keep the **endpoints.json** file more clean and clear.  
+
+    {
+        "example_group": [
+            {
+                "endpoint": "/users/{id}",
+                "backend": "/v1/users?userId={id}"
+                "sd": "static"
+            },
+            {
+                "endpoint": "/posts/{id}",
+                "backend": "/posts?postId={id}"
+            }
+        ]
+    }
+    
+for the second endpoint it will add the **sd** key with default value.
+
+Now, inorder to use this in the **krakend.json** file add the new key as follows, 
+
+    "sd" : {{ with $endpoint.sd }}"{{ $endpoint.sd }}"{{else}}"static"{{end}},
+Here what I have done is, if the **sd** is not mentioned in the endpoint the default value will be "static" otherwise it will get the given value.
 
 ### Testing the configuration
 As the configuration is now composed of several pieces, it's easy to make a mistake at some point. Test the syntax of all the files is good with the `krakend check` command and pay attention to the output to verify there aren't any errors.
